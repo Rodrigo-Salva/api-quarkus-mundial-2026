@@ -8,14 +8,15 @@ set -e
 exec > /var/log/user-data.log 2>&1
 echo "=== Iniciando instalacion Mundial 2026 API === $(date)"
 
-# ── Configuracion ─────────────────────────────────────────────
+# ── Configuracion — CAMBIA ESTOS VALORES ANTES DE PEGAR EN AWS ─
+# Estas variables NO se guardan en GitHub — solo existen en AWS
 REPO_URL="https://github.com/Rodrigo-Salva/api-quarkus-mundial-2026.git"
-DB_PASSWORD="Rd2026$ecure#Api!"
+DB_PASSWORD="CAMBIA_ESTE_PASSWORD"
 AI_PROVIDER="gemini"
 AI_API_KEY=""
 PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-S3_ACCESS_KEY="rs_minio_2026"
-S3_SECRET_KEY="rs_s3key_Mnd26#"
+S3_ACCESS_KEY="CAMBIA_ESTE_ACCESS_KEY"
+S3_SECRET_KEY="CAMBIA_ESTE_SECRET_KEY"
 
 # ── 1. Actualizar sistema ─────────────────────────────────────
 echo "--- Actualizando sistema..."
