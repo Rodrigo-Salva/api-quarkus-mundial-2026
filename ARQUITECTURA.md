@@ -163,7 +163,61 @@ DOCKER_IMAGE=tu-usuario/mundial2026-api:latest \
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-#### Opción C — AWS ECS Fargate
+#### Opción C — AWS EC2 con User Data (automático)
+
+Esta es la forma más sencilla de desplegar en AWS. El script instala
+todo automáticamente sin que tengas que conectarte a la instancia.
+
+**Pasos:**
+
+**1.** Edita `.env.example` en tu repo con tus 3 credenciales:
+```env
+DB_PASSWORD=TuPasswordSeguro
+S3_ACCESS_KEY=tu_minio_key
+S3_SECRET_KEY=tu_minio_secret
+```
+Haz commit y push a GitHub.
+
+**2.** En AWS Console crea una instancia EC2:
+```
+AMI:           Amazon Linux 2023
+Instance type: t3.medium (2 vCPU, 4 GB RAM)
+Storage:       20 GB
+```
+
+**3.** Security Group — abre estos puertos:
+```
+22   → Solo tu IP     (SSH administración)
+80   → Anywhere       (API pública)
+8080 → Solo tu IP     (Swagger UI)
+9001 → Solo tu IP     (MinIO consola)
+8091 → Solo tu IP     (Kafka UI)
+```
+
+**4.** En **Advanced Details → User data** pega el contenido de:
+```
+scripts/ec2-user-data.sh
+```
+
+**5.** Launch Instance — espera ~10 minutos.
+
+**6.** Verifica:
+```bash
+curl http://IP_PUBLICA/health
+# Debe retornar: {"status":"UP",...}
+```
+
+**Problemas conocidos y sus soluciones (ya corregidos en el script):**
+
+| Problema | Causa | Fix aplicado |
+|---|---|---|
+| `HOME: unbound variable` | User Data corre sin entorno de usuario | `export HOME=/root` antes de Maven |
+| Kafka UUID inválido | El CLUSTER_ID debe ser UUID base64 | Se genera con `kafka-storage random-uuid` |
+| `.env not found` | Docker Compose necesita el archivo | Se crea automáticamente desde `.env.example` |
+| `AI_GEMINI_API_KEY` falla | Variable requerida aunque esté vacía | Se pone `not-configured` por defecto |
+| nginx.conf con `$host` | Bash interpola variables en heredoc | Se usa `printf` sin interpolación |
+
+#### Opción D — AWS ECS Fargate
 
 ```bash
 # 1. Subir imagen a ECR
