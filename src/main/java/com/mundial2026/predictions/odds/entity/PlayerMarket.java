@@ -1,0 +1,48 @@
+package com.mundial2026.predictions.odds.entity;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "player_markets",
+       uniqueConstraints = @UniqueConstraint(columnNames = {"match_id", "player_name", "market"}))
+public class PlayerMarket {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
+
+    @Column(name = "match_id", nullable = false)
+    public Long matchId;
+
+    @Column(name = "player_name", nullable = false)
+    public String playerName;
+
+    @Column(nullable = false, length = 40)
+    public String market;
+
+    @Column(nullable = false, precision = 8, scale = 2)
+    public BigDecimal odds;
+
+    @Column(name = "base_odds", nullable = false, precision = 8, scale = 2)
+    public BigDecimal baseOdds;
+
+    @Column(name = "total_staked", nullable = false, precision = 14, scale = 2)
+    public BigDecimal totalStaked = BigDecimal.ZERO;
+
+    @Column(name = "bet_count", nullable = false)
+    public Integer betCount = 0;
+
+    @Column(nullable = false)
+    public Boolean active = true;
+
+    @Column(name = "updated_at", nullable = false)
+    public LocalDateTime updatedAt;
+
+    @PrePersist
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+}
