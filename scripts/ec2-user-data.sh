@@ -10,12 +10,12 @@ echo "=== Iniciando instalacion Mundial 2026 API === $(date)"
 
 # ── Configuracion ─────────────────────────────────────────────
 REPO_URL="https://github.com/Rodrigo-Salva/api-quarkus-mundial-2026.git"
-DB_PASSWORD="Mundial2026Secure!"
+DB_PASSWORD="Rd2026$ecure#Api!"
 AI_PROVIDER="gemini"
 AI_API_KEY=""
 PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-S3_ACCESS_KEY="minio_admin_2026"
-S3_SECRET_KEY="minio_secret_2026"
+S3_ACCESS_KEY="rs_minio_2026"
+S3_SECRET_KEY="rs_s3key_Mnd26#"
 
 # ── 1. Actualizar sistema ─────────────────────────────────────
 echo "--- Actualizando sistema..."
