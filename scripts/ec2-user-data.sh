@@ -11,12 +11,12 @@ echo "=== Iniciando instalacion Mundial 2026 API === $(date)"
 # ── Configuracion — CAMBIA ESTOS VALORES ANTES DE PEGAR EN AWS ─
 # Estas variables NO se guardan en GitHub — solo existen en AWS
 REPO_URL="https://github.com/Rodrigo-Salva/api-quarkus-mundial-2026.git"
-DB_PASSWORD="CAMBIA_ESTE_PASSWORD"
+DB_PASSWORD="Rodrigo2026!"
 AI_PROVIDER="gemini"
 AI_API_KEY=""
 PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-S3_ACCESS_KEY="CAMBIA_ESTE_ACCESS_KEY"
-S3_SECRET_KEY="CAMBIA_ESTE_SECRET_KEY"
+S3_ACCESS_KEY="rodrigo_minio"
+S3_SECRET_KEY="rodrigo_clave123"
 
 # ── 1. Actualizar sistema ─────────────────────────────────────
 echo "--- Actualizando sistema..."
@@ -59,6 +59,8 @@ openssl rsa -in src/main/resources/privateKey.pem \
 # ── 8. Construir el JAR ───────────────────────────────────────
 echo "--- Construyendo la aplicacion (Maven)..."
 chmod +x mvnw
+export HOME=/root
+export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 ./mvnw package -DskipTests -q
 echo "--- JAR construido correctamente"
 
