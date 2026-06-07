@@ -1,5 +1,7 @@
 package com.mundial2026.predictions.kyc.service;
 
+import com.mundial2026.predictions.auth.repository.UserRepository;
+import com.mundial2026.predictions.kyc.dto.KycAdminEntry;
 import com.mundial2026.predictions.kyc.dto.KycStatusResponse;
 import com.mundial2026.predictions.kyc.dto.KycSubmitRequest;
 import com.mundial2026.predictions.kyc.dto.LimitRequest;
@@ -24,6 +26,9 @@ public class KycService {
 
     @Inject
     KycRepository kycRepository;
+
+    @Inject
+    UserRepository userRepository;
 
     @Inject
     LimitRepository limitRepository;
@@ -108,6 +113,19 @@ public class KycService {
         exclusion.reason = req.reason();
         exclusion.active = true;
         exclusionRepository.persist(exclusion);
+    }
+
+    public List<KycAdminEntry> getAllForAdmin(String statusFilter) {
+        List<com.mundial2026.predictions.kyc.entity.KycVerification> list =
+                statusFilter == null || statusFilter.equals("ALL")
+                        ? kycRepository.findAllOrderedByCreated()
+                        : kycRepository.findByStatus(statusFilter);
+        return list.stream().map(kyc -> {
+            String username = userRepository.findByIdOptional(kyc.userId)
+                    .map(u -> u.username).orElse("usuario_" + kyc.userId);
+            return new KycAdminEntry(kyc.id, kyc.userId, username, kyc.status,
+                    kyc.documentType, kyc.documentNumber, kyc.createdAt, kyc.verifiedAt);
+        }).collect(java.util.stream.Collectors.toList());
     }
 
     private KycStatusResponse toResponse(KycVerification kyc) {

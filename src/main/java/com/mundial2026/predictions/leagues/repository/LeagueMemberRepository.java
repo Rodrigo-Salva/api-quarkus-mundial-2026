@@ -39,4 +39,8 @@ public class LeagueMemberRepository implements PanacheRepository<LeagueMember> {
     public List<LeagueMember> findByLeagueIdOrdered(Long leagueId) {
         return list("leagueId = ?1 order by joinedAt asc", leagueId);
     }
+
+    public boolean removeMember(Long leagueId, Long userId) {
+        return delete("leagueId = ?1 and userId = ?2", leagueId, userId) > 0;
+    }
 }

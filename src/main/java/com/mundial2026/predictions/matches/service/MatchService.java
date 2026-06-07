@@ -5,6 +5,7 @@ import com.mundial2026.predictions.matches.dto.MatchResponse;
 import com.mundial2026.predictions.matches.entity.Match;
 import com.mundial2026.predictions.matches.event.MatchEventProducer;
 import com.mundial2026.predictions.matches.repository.MatchRepository;
+import com.mundial2026.predictions.odds.service.OddsService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -19,6 +20,7 @@ public class MatchService {
     @Inject MatchRepository     matchRepository;
     @Inject MatchEventProducer  matchEventProducer;
     @Inject SettlementService   settlementService;
+    @Inject OddsService         oddsService;
 
     public List<MatchResponse> findAll() {
         return matchRepository.listAll().stream()
@@ -46,6 +48,7 @@ public class MatchService {
         match.matchDate = req.matchDate();
         match.status    = Match.MatchStatus.SCHEDULED;
         matchRepository.persist(match);
+        oddsService.initDefaultOdds(match.id);
         return MatchResponse.from(match);
     }
 

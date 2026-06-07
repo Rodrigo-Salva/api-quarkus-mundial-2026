@@ -2,18 +2,18 @@
 -- SEED DATA — Mundial 2026 Predictions API
 -- Solo se ejecuta en perfil %dev y %test (Flyway clean-at-start)
 -- Contraseña de todos los usuarios: Test1234!
--- Hash SHA-256 de "Test1234!": a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3
+-- Hash SHA-256 de "Test1234!": 0fadf52a4580cfebb99e61162139af3d3a6403c1d36b83e4962b721d1c8cbd0b
 -- ═══════════════════════════════════════════════════════════════
 
 -- ── 1. USUARIOS ──────────────────────────────────────────────────
 -- password para todos: Test1234!
 INSERT INTO users (email, username, password_hash, country, role) VALUES
-  ('admin@mundial2026.com',   'admin',      'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'PER', 'ADMIN'),
-  ('rodrigo@test.com',        'rodrigo26',  'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'PER', 'USER'),
-  ('carlos@test.com',         'carlitos10', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'ARG', 'USER'),
-  ('maria@test.com',          'maria_gol',  'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'BRA', 'USER'),
-  ('juan@test.com',           'juanito7',   'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'ESP', 'USER'),
-  ('sofia@test.com',          'sofi_fit',   'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 'MEX', 'USER');
+  ('admin@mundial2026.com',   'admin',      '0fadf52a4580cfebb99e61162139af3d3a6403c1d36b83e4962b721d1c8cbd0b', 'PER', 'ADMIN'),
+  ('rodrigo@test.com',        'rodrigo26',  '0fadf52a4580cfebb99e61162139af3d3a6403c1d36b83e4962b721d1c8cbd0b', 'PER', 'USER'),
+  ('carlos@test.com',         'carlitos10', '0fadf52a4580cfebb99e61162139af3d3a6403c1d36b83e4962b721d1c8cbd0b', 'ARG', 'USER'),
+  ('maria@test.com',          'maria_gol',  '0fadf52a4580cfebb99e61162139af3d3a6403c1d36b83e4962b721d1c8cbd0b', 'BRA', 'USER'),
+  ('juan@test.com',           'juanito7',   '0fadf52a4580cfebb99e61162139af3d3a6403c1d36b83e4962b721d1c8cbd0b', 'ESP', 'USER'),
+  ('sofia@test.com',          'sofi_fit',   '0fadf52a4580cfebb99e61162139af3d3a6403c1d36b83e4962b721d1c8cbd0b', 'MEX', 'USER');
 
 -- ── 2. PARTIDOS — Fase de Grupos Mundial 2026 ────────────────────
 -- Grupo A

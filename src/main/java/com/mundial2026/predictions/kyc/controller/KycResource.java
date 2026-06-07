@@ -112,6 +112,18 @@ public class KycResource {
         return Response.ok(ApiResponse.ok(null, "Self-exclusion applied")).build();
     }
 
+    @GET
+    @Path("/admin/all")
+    @RolesAllowed("ADMIN")
+    @Operation(summary = "Listar todos los KYCs (ADMIN)",
+               description = "Devuelve todas las solicitudes KYC. Filtra por status: PENDING, APPROVED, REJECTED o ALL.")
+    @APIResponse(responseCode = "200", description = "Lista de solicitudes KYC con username incluido.")
+    public Response listAll(
+            @Parameter(description = "Filtro por estado", example = "PENDING")
+            @QueryParam("status") @DefaultValue("ALL") String status) {
+        return Response.ok(ApiResponse.ok(kycService.getAllForAdmin(status))).build();
+    }
+
     @PUT
     @Path("/approve/{userId}")
     @RolesAllowed("ADMIN")

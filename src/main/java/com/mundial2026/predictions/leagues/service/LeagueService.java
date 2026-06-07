@@ -48,10 +48,30 @@ public class LeagueService {
     }
 
     @Transactional
+    public LeagueResponse closeLeague(Long leagueId, Long requesterId) {
+        League league = leagueRepository.findById(leagueId);
+        if (league == null) throw new NotFoundException("Sala no encontrada: " + leagueId);
+        if (!league.ownerId.equals(requesterId)) {
+            throw new jakarta.ws.rs.ForbiddenException("Solo el dueño de la sala puede cerrarla");
+        }
+        if ("CLOSED".equals(league.status)) {
+            throw new IllegalArgumentException("La sala ya está cerrada");
+        }
+        league.status = "CLOSED";
+        leagueRepository.persist(league);
+        List<LeagueMember> members = leagueMemberRepository.findByLeagueId(leagueId);
+        return buildResponse(league, members);
+    }
+
+    @Transactional
     public LeagueResponse join(String code, Long userId) {
         League league = leagueRepository.findByCode(code)
                 .orElseThrow(() -> new NotFoundException(
                         "No existe ninguna sala con el código: " + code));
+
+        if ("CLOSED".equals(league.status)) {
+            throw new IllegalArgumentException("Esta sala ya está cerrada y no acepta nuevos miembros");
+        }
 
         if (leagueMemberRepository.isMember(league.id, userId)) {
             throw new IllegalArgumentException("Ya eres miembro de esta sala");
@@ -64,6 +84,36 @@ public class LeagueService {
 
         List<LeagueMember> members = leagueMemberRepository.findByLeagueId(league.id);
         return buildResponse(league, members);
+    }
+
+    @Transactional
+    public LeagueResponse kickMember(Long leagueId, Long requesterId, Long targetUserId) {
+        League league = leagueRepository.findById(leagueId);
+        if (league == null) throw new NotFoundException("Sala no encontrada: " + leagueId);
+        if (!league.ownerId.equals(requesterId)) {
+            throw new jakarta.ws.rs.ForbiddenException("Solo el dueño de la sala puede expulsar miembros");
+        }
+        if (league.ownerId.equals(targetUserId)) {
+            throw new IllegalArgumentException("No puedes expulsarte a ti mismo como dueño");
+        }
+        boolean removed = leagueMemberRepository.removeMember(leagueId, targetUserId);
+        if (!removed) {
+            throw new NotFoundException("El usuario no es miembro de esta sala");
+        }
+        List<LeagueMember> members = leagueMemberRepository.findByLeagueId(leagueId);
+        return buildResponse(league, members);
+    }
+
+    public List<LeagueResponse> getMyLeagues(Long userId) {
+        List<LeagueMember> memberships = leagueMemberRepository.findByUserId(userId);
+        List<LeagueResponse> result = new java.util.ArrayList<>();
+        for (LeagueMember m : memberships) {
+            League league = leagueRepository.findById(m.leagueId);
+            if (league == null) continue;
+            List<LeagueMember> members = leagueMemberRepository.findByLeagueId(m.leagueId);
+            result.add(buildResponse(league, members));
+        }
+        return result;
     }
 
     public LeagueResponse findById(Long id) {
@@ -126,7 +176,8 @@ public class LeagueService {
         List<LeagueResponse.MemberInfo> memberInfos = members.stream()
                 .map(m -> new LeagueResponse.MemberInfo(m.userId, m.joinedAt))
                 .collect(Collectors.toList());
+        String status = league.status != null ? league.status : "ACTIVE";
         return new LeagueResponse(league.id, league.name, league.code,
-                league.ownerId, league.createdAt, memberInfos);
+                league.ownerId, league.createdAt, status, memberInfos);
     }
 }

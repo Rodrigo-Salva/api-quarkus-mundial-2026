@@ -68,6 +68,47 @@ public class LeagueResource {
         return Response.ok(ApiResponse.ok(leagueService.join(code, userId), "Joined league successfully")).build();
     }
 
+    @PUT
+    @Path("/{id}/close")
+    @Operation(summary = "Cerrar sala (solo dueño)",
+               description = "El dueño cierra la sala: no se aceptan nuevos miembros ni predicciones. El ranking queda congelado.")
+    @APIResponses({
+        @APIResponse(responseCode = "200", description = "Sala cerrada correctamente."),
+        @APIResponse(responseCode = "403", description = "No eres el dueño de la sala."),
+        @APIResponse(responseCode = "400", description = "La sala ya está cerrada.")
+    })
+    public Response closeLeague(
+            @Parameter(description = "ID de la sala", required = true) @PathParam("id") Long id) {
+        Long requesterId = securityUtils.getCurrentUserId();
+        return Response.ok(ApiResponse.ok(leagueService.closeLeague(id, requesterId), "League closed")).build();
+    }
+
+    @DELETE
+    @Path("/{id}/members/{userId}")
+    @Operation(summary = "Expulsar miembro (solo dueño)",
+               description = "El dueño de la sala puede expulsar a cualquier miembro. No puede expulsarse a sí mismo.")
+    @APIResponses({
+        @APIResponse(responseCode = "200", description = "Miembro expulsado. Devuelve la sala actualizada."),
+        @APIResponse(responseCode = "403", description = "No eres el dueño de la sala."),
+        @APIResponse(responseCode = "404", description = "Sala o miembro no encontrado.")
+    })
+    public Response kickMember(
+            @Parameter(description = "ID de la sala", required = true) @PathParam("id") Long id,
+            @Parameter(description = "ID del usuario a expulsar", required = true) @PathParam("userId") Long userId) {
+        Long requesterId = securityUtils.getCurrentUserId();
+        return Response.ok(ApiResponse.ok(leagueService.kickMember(id, requesterId, userId), "Member removed")).build();
+    }
+
+    @GET
+    @Path("/me")
+    @Operation(summary = "Mis salas",
+               description = "Devuelve todas las salas a las que pertenece el usuario autenticado (como creador o miembro).")
+    @APIResponse(responseCode = "200", description = "Lista de salas del usuario.")
+    public Response getMyLeagues() {
+        Long userId = securityUtils.getCurrentUserId();
+        return Response.ok(ApiResponse.ok(leagueService.getMyLeagues(userId))).build();
+    }
+
     @GET
     @Path("/{id}")
     @Operation(summary = "Detalle de sala",

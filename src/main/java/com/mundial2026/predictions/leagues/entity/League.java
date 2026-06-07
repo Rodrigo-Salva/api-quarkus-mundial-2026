@@ -26,8 +26,12 @@ public class League {
     @Column(name = "created_at", nullable = false, updatable = false)
     public LocalDateTime createdAt;
 
+    @Column(nullable = false, length = 10)
+    public String status = "ACTIVE";
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
+        if (this.status == null) this.status = "ACTIVE";
     }
 }

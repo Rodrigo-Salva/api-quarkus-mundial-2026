@@ -9,6 +9,7 @@ public record LeagueResponse(
         String code,
         Long ownerId,
         LocalDateTime createdAt,
+        String status,
         List<MemberInfo> members
 ) {
     public record MemberInfo(Long userId, LocalDateTime joinedAt) {}
