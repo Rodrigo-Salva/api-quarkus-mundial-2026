@@ -1,6 +1,8 @@
 package com.mundial2026.predictions.matches.service;
 
 import com.mundial2026.predictions.leagues.repository.LeagueMemberRepository;
+import com.mundial2026.predictions.matches.entity.Match;
+import com.mundial2026.predictions.matches.repository.MatchRepository;
 import com.mundial2026.predictions.notifications.websocket.NotificationSocket;
 import com.mundial2026.predictions.predictions.repository.PredictionRepository;
 import com.mundial2026.predictions.predictions.service.PredictionService;
@@ -30,6 +32,7 @@ public class SettlementService {
     @Inject RankingService         rankingService;
     @Inject UserRepository         userRepository;
     @Inject LeagueMemberRepository leagueMemberRepository;
+    @Inject MatchRepository        matchRepository;
 
     /**
      * Punto de entrada principal — llamado desde MatchService cuando el admin
@@ -78,25 +81,45 @@ public class SettlementService {
     // Envía notificaciones WebSocket
     private void notifySettlement(Long matchId, Integer homeScore, Integer awayScore) {
         try {
+            Match match = matchRepository.findById(matchId);
+            String homeTeam = match != null ? match.homeTeam : "Local";
+            String awayTeam = match != null ? match.awayTeam : "Visitante";
+
             // Notifica al canal del partido
             String matchEvent = String.format(
-                    "{\"type\":\"MATCH_FINISHED\",\"matchId\":%d,\"homeScore\":%d,\"awayScore\":%d}",
-                    matchId, homeScore, awayScore);
+                    "{\"type\":\"MATCH_FINISHED\",\"matchId\":%d,\"homeScore\":%d,\"awayScore\":%d"
+                    + ",\"homeTeam\":\"%s\",\"awayTeam\":\"%s\"}",
+                    matchId, homeScore, awayScore, homeTeam, awayTeam);
             MatchSocket.broadcastToMatch(String.valueOf(matchId), matchEvent);
 
-            // Notifica a cada usuario con su resultado personalizado
+            // Notifica a cada usuario con su resultado personalizado + desglose completo
             predictionRepository.findByMatchId(matchId).forEach(prediction -> {
                 try {
+                    boolean exactScore = prediction.homeScore.equals(homeScore)
+                            && prediction.awayScore.equals(awayScore);
+                    int predDiff = prediction.homeScore - prediction.awayScore;
+                    int realDiff = homeScore - awayScore;
+                    boolean diffCorrect = !exactScore && predDiff == realDiff;
+
                     String userNotif = String.format(
                             "{\"type\":\"PREDICTION_SETTLED\",\"matchId\":%d"
+                            + ",\"homeTeam\":\"%s\",\"awayTeam\":\"%s\""
+                            + ",\"homeScore\":%d,\"awayScore\":%d"
+                            + ",\"predictedHome\":%d,\"predictedAway\":%d"
                             + ",\"points\":%d,\"earlyBonus\":%d,\"streakBonus\":%d"
-                            + ",\"totalPoints\":%d,\"winnerCorrect\":%b}",
+                            + ",\"totalPoints\":%d,\"winnerCorrect\":%b"
+                            + ",\"exactScore\":%b,\"diffCorrect\":%b}",
                             matchId,
+                            homeTeam, awayTeam,
+                            homeScore, awayScore,
+                            prediction.homeScore, prediction.awayScore,
                             prediction.points,
                             prediction.earlyBonus,
                             prediction.streakBonus,
                             prediction.totalPoints,
-                            prediction.winnerCorrect);
+                            prediction.winnerCorrect,
+                            exactScore,
+                            diffCorrect);
                     NotificationSocket.sendToUser(
                             String.valueOf(prediction.userId), userNotif);
                 } catch (Exception e) {

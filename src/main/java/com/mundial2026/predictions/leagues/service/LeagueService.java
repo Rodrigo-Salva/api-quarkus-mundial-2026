@@ -34,9 +34,10 @@ public class LeagueService {
     @Transactional
     public LeagueResponse create(Long ownerId, LeagueRequest req) {
         League league = new League();
-        league.name    = req.name();
-        league.code    = generateUniqueCode();
-        league.ownerId = ownerId;
+        league.name      = req.name();
+        league.code      = generateUniqueCode();
+        league.ownerId   = ownerId;
+        league.isPrivate = req.isPrivate();
         leagueRepository.persist(league);
 
         LeagueMember member = new LeagueMember();
@@ -178,6 +179,6 @@ public class LeagueService {
                 .collect(Collectors.toList());
         String status = league.status != null ? league.status : "ACTIVE";
         return new LeagueResponse(league.id, league.name, league.code,
-                league.ownerId, league.createdAt, status, memberInfos);
+                league.ownerId, league.createdAt, status, league.isPrivate, memberInfos);
     }
 }

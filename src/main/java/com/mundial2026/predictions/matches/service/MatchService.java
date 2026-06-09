@@ -41,6 +41,13 @@ public class MatchService {
     }
 
     @Transactional
+    public void delete(Long id) {
+        Match match = matchRepository.findById(id);
+        if (match == null) throw new NotFoundException("Partido no encontrado: " + id);
+        matchRepository.delete(match);
+    }
+
+    @Transactional
     public MatchResponse create(MatchRequest req) {
         Match match = new Match();
         match.homeTeam  = req.homeTeam();

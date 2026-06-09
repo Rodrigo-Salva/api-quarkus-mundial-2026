@@ -150,7 +150,7 @@ class PredictionServiceTest {
                 "TeamC", "TeamD", LocalDateTime.now().plusDays(1)));
 
         // Crear sala y unirse
-        leagueService.create(uid, new LeagueRequest("Sala Prediccion Test"));
+        leagueService.create(uid, new LeagueRequest("Sala Prediccion Test", false));
 
         // Ahora sí puede predecir
         var pred = predictionService.submit(uid,

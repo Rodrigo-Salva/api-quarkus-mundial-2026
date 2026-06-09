@@ -21,7 +21,7 @@ class LeagueServiceTest {
     @Test
     void testCreateLeague() {
         Long uid = users.createUser(5001);
-        LeagueResponse league = leagueService.create(uid, new LeagueRequest("Mi Liga Test"));
+        LeagueResponse league = leagueService.create(uid, new LeagueRequest("Mi Liga Test", false));
         assertNotNull(league.id());
         assertNotNull(league.code());
         assertEquals(6, league.code().length());
@@ -33,7 +33,7 @@ class LeagueServiceTest {
     void testJoinLeague() {
         Long owner  = users.createUser(5002);
         Long joiner = users.createUser(5003);
-        LeagueResponse created = leagueService.create(owner, new LeagueRequest("Liga Join Test"));
+        LeagueResponse created = leagueService.create(owner, new LeagueRequest("Liga Join Test", false));
         LeagueResponse joined  = leagueService.join(created.code(), joiner);
         assertTrue(joined.members().stream().anyMatch(m -> m.userId().equals(joiner)));
     }
@@ -41,7 +41,7 @@ class LeagueServiceTest {
     @Test
     void testJoinLeagueAlreadyMember() {
         Long uid = users.createUser(5004);
-        LeagueResponse created = leagueService.create(uid, new LeagueRequest("Liga Dup Test"));
+        LeagueResponse created = leagueService.create(uid, new LeagueRequest("Liga Dup Test", false));
         assertThrows(IllegalArgumentException.class,
                 () -> leagueService.join(created.code(), uid));
     }
@@ -50,7 +50,7 @@ class LeagueServiceTest {
     void testLeagueRankingEmptyNoPoints() {
         Long uid1 = users.createUser(5005);
         Long uid2 = users.createUser(5006);
-        LeagueResponse league = leagueService.create(uid1, new LeagueRequest("Ranking Test"));
+        LeagueResponse league = leagueService.create(uid1, new LeagueRequest("Ranking Test", false));
         leagueService.join(league.code(), uid2);
 
         List<LeagueRankingEntry> ranking = leagueService.getLeagueRanking(league.id(), 50);
@@ -69,7 +69,7 @@ class LeagueServiceTest {
         // Como no hay predicciones en el test, ambos tienen 0
         Long owner = users.createUser(5007);
         Long uid2  = users.createUser(5008);
-        LeagueResponse league = leagueService.create(owner, new LeagueRequest("Ranking Fecha Test"));
+        LeagueResponse league = leagueService.create(owner, new LeagueRequest("Ranking Fecha Test", false));
         leagueService.join(league.code(), uid2);
 
         List<LeagueRankingEntry> ranking = leagueService.getLeagueRanking(league.id(), 50);

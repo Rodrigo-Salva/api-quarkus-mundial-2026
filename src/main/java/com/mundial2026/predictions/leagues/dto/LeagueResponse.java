@@ -10,6 +10,7 @@ public record LeagueResponse(
         Long ownerId,
         LocalDateTime createdAt,
         String status,
+        boolean isPrivate,
         List<MemberInfo> members
 ) {
     public record MemberInfo(Long userId, LocalDateTime joinedAt) {}

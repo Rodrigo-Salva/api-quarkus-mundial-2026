@@ -92,6 +92,20 @@ public class MatchResource {
                 .build();
     }
 
+    @DELETE
+    @Path("/{id}")
+    @RolesAllowed("ADMIN")
+    @SecurityRequirement(name = "BearerAuth")
+    @Operation(summary = "Eliminar partido (ADMIN)")
+    @APIResponses({
+        @APIResponse(responseCode = "204", description = "Partido eliminado."),
+        @APIResponse(responseCode = "404", description = "Partido no encontrado.")
+    })
+    public Response delete(@Parameter(description = "ID del partido") @PathParam("id") Long id) {
+        matchService.delete(id);
+        return Response.noContent().build();
+    }
+
     @PUT
     @Path("/{id}/result")
     @RolesAllowed("ADMIN")

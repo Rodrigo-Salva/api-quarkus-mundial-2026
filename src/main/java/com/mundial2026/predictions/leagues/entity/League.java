@@ -29,6 +29,9 @@ public class League {
     @Column(nullable = false, length = 10)
     public String status = "ACTIVE";
 
+    @Column(name = "private", nullable = false)
+    public boolean isPrivate = false;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
