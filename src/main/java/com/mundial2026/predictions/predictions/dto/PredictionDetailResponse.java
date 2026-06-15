@@ -127,15 +127,15 @@ public record PredictionDetailResponse(
             int actualDiff = Math.abs(actualHome - actualAway);
             boolean sameDiff = sameWinner && predDiff == actualDiff;
 
-            if (sameWinner && !sameDiff) {
-                String winnerName = actualHome > actualAway ? "local"
-                        : actualHome < actualAway ? "visitante" : "empate";
+            String winnerName = actualHome > actualAway ? "local"
+                    : actualHome < actualAway ? "visitante" : "empate";
+
+            if (sameWinner) {
                 list.add(new PointDetail(
                         "Ganador correcto",
-                        "Acertaste que ganaría el " + winnerName
-                          + " pero no el marcador exacto",
+                        "Acertaste que ganaría el " + winnerName,
                         3, true));
-            } else if (!sameWinner) {
+            } else {
                 list.add(new PointDetail(
                         "Ganador correcto",
                         "No acertaste quién ganó el partido",

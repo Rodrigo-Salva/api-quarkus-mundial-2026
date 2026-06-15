@@ -175,8 +175,8 @@ public class PredictionService {
         if (predSign == actualSign) {
             int predDiff   = Math.abs(predHome - predAway);
             int actualDiff = Math.abs(actualHome - actualAway);
-            if (predDiff == actualDiff) return 2;  // Regla 3
-            return 3;                               // Regla 2
+            if (predDiff == actualDiff) return 5;  // Ganador (3) + Diferencia (2)
+            return 3;                               // Ganador (3)
         }
         return 0;
     }
